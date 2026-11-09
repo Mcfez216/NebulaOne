@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=NebulaOne
+GenericName=Space corporation sandbox
+Comment=Run a far-future corporation in a player-driven economy
+Exec=nebulaone
+Icon=nebulaone
+Terminal=false
+Categories=Game;StrategyGame;
+Keywords=space;economy;trading;strategy;

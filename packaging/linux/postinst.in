@@ -1,0 +1,29 @@
+#!/bin/sh
+# NebulaOne @PROJECT_VERSION@: put a launcher on the desktop of the user who installed the package.
+# Never fails the install: every step is best effort.
+[ "$1" = configure ] || [ "$1" = 1 ] || [ "$1" = 2 ] || exit 0
+command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database -q /usr/share/applications 2>/dev/null
+command -v gtk-update-icon-cache >/dev/null 2>&1 && gtk-update-icon-cache -q -t /usr/share/icons/hicolor 2>/dev/null
+user="${SUDO_USER:-}"
+if [ -z "$user" ] && [ -n "${PKEXEC_UID:-}" ]; then user=$(id -nu "$PKEXEC_UID" 2>/dev/null); fi
+[ -n "$user" ] && [ "$user" != root ] || exit 0
+home=$(getent passwd "$user" | cut -d: -f6)
+[ -n "$home" ] && [ -d "$home" ] || exit 0
+desk="$home/Desktop"
+dirs="$home/.config/user-dirs.dirs"
+if [ -f "$dirs" ]; then
+  d=$(sed -n 's/^XDG_DESKTOP_DIR="\(.*\)"/\1/p' "$dirs" | sed "s|\$HOME|$home|")
+  [ -n "$d" ] && desk="$d"
+fi
+[ -d "$desk" ] || exit 0
+target="$desk/nebulaone.desktop"
+cp /usr/share/applications/nebulaone.desktop "$target" 2>/dev/null || exit 0
+chown "$user": "$target" 2>/dev/null
+chmod 755 "$target" 2>/dev/null
+# GNOME and Cinnamon only launch desktop files marked trusted.
+uid=$(id -u "$user" 2>/dev/null)
+if command -v gio >/dev/null 2>&1 && [ -S "/run/user/$uid/bus" ]; then
+  runuser -u "$user" -- env DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+    gio set "$target" metadata::trusted true >/dev/null 2>&1
+fi
+exit 0

@@ -1,0 +1,17 @@
+#!/bin/sh
+# NebulaOne @PROJECT_VERSION@: remove the desktop launcher the install put there.
+[ "$1" = remove ] || [ "$1" = purge ] || [ "$1" = 0 ] || exit 0
+user="${SUDO_USER:-}"
+if [ -z "$user" ] && [ -n "${PKEXEC_UID:-}" ]; then user=$(id -nu "$PKEXEC_UID" 2>/dev/null); fi
+[ -n "$user" ] && [ "$user" != root ] || exit 0
+home=$(getent passwd "$user" | cut -d: -f6)
+[ -n "$home" ] || exit 0
+desk="$home/Desktop"
+dirs="$home/.config/user-dirs.dirs"
+if [ -f "$dirs" ]; then
+  d=$(sed -n 's/^XDG_DESKTOP_DIR="\(.*\)"/\1/p' "$dirs" | sed "s|\$HOME|$home|")
+  [ -n "$d" ] && desk="$d"
+fi
+target="$desk/nebulaone.desktop"
+[ -f "$target" ] && grep -q '^Exec=nebulaone' "$target" && rm -f "$target"
+exit 0

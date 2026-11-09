@@ -1,0 +1,70 @@
+# Builds NebulaOne for Windows and Linux on every push and attaches the packages
+# to the workflow run. Tag a commit v* to also publish a GitHub release.
+name: build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev \
+            libgl1-mesa-dev libwayland-dev libxkbcommon-dev rpm
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build
+      - name: Economy self-test
+        run: ./build/nebula_selftest 60 7 --play
+      - name: Package
+        run: cd build && cpack
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nebulaone-linux
+          path: |
+            build/NebulaOne-*.tar.gz
+            build/NebulaOne-*.deb
+            build/NebulaOne-*.rpm
+
+  windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64
+      - name: Build
+        run: cmake --build build --config Release
+      - name: Economy self-test
+        run: .\build\Release\nebula_selftest.exe 60 7 --play
+      - name: Package
+        run: |
+          cd build
+          cpack -C Release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nebulaone-windows
+          path: |
+            build/NebulaOne-*.exe
+            build/NebulaOne-*.zip
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [linux, windows]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*

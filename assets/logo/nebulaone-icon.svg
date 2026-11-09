@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="tile" cx="0.5" cy="0.42" r="0.75">
+      <stop offset="0" stop-color="#1C2433"/>
+      <stop offset="1" stop-color="#0B0D12"/>
+    </radialGradient>
+  </defs>
+  <rect x="8" y="8" width="496" height="496" rx="56" fill="url(#tile)" stroke="#2E3A4A" stroke-width="4"/>
+  <g transform="translate(256,256) scale(0.86) translate(-256,-256)">
+  <defs>
+    <linearGradient id="inki" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F3ECDB"/>
+      <stop offset="1" stop-color="#B9AE96"/>
+    </linearGradient>
+    <radialGradient id="stari">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="0.35" stop-color="#FFE2B0"/>
+      <stop offset="1" stop-color="#46C4B2" stop-opacity="0"/>
+    </radialGradient>
+    <mask id="cuti" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
+      <rect width="512" height="512" fill="#fff"/>
+      <path d="M205,0 A205,62 0 0 1 -205,0" transform="translate(256,256) rotate(-16)" fill="none" stroke="#000" stroke-width="28"/>
+    </mask>
+  </defs>
+  <path d="M-205,0 A205,62 0 0 1 205,0" transform="translate(256,256) rotate(-16)" fill="none" stroke="#46C4B2" stroke-opacity="0.38" stroke-width="9" stroke-linecap="round"/>
+  <path d="M150,385 L150,173 L190,173 L190,385 Z M150,173 L196,173 L362,385 L316,385 Z M362,385 L362,127 L318,127 L282,161 L282,185 L322,153 L322,385 Z" fill="url(#inki)" mask="url(#cuti)"/>
+  <path d="M205,0 A205,62 0 0 1 -205,0" transform="translate(256,256) rotate(-16)" fill="none" stroke="#46C4B2" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="374.9" cy="276.6" r="30" fill="url(#stari)"/>
+  <circle cx="374.9" cy="276.6" r="6.5" fill="#FFF6E6"/>
+  </g>
+</svg>

@@ -1,0 +1,5 @@
+build*/
+*.n1save
+.vs/
+.vscode/
+CMakeUserPresets.json
